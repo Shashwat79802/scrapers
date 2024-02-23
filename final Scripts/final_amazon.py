@@ -86,6 +86,9 @@ def scrape_url(url):
     soup = BeautifulSoup(page_source, "lxml")
     driver.quit()
 
+    if 'gp/product' in url:
+        url.replace('gp/product', 'dp')
+
     id = str(url[url.index('dp/')+3: url.index('dp/')+13])
     # print(id)
     # print(8)
@@ -104,6 +107,7 @@ def scrape_url(url):
     # print("https://www.amazon.in" + seller.get('href'))
     # print(11)
     seller = "https://www.amazon.in" + seller
+    # print(seller)
 
     description = soup.find_all("ul", attrs={"class":'a-unordered-list a-vertical a-spacing-small'})
     desc_list = []
@@ -115,7 +119,7 @@ def scrape_url(url):
     # print(12)
     # print(desc_html_list)
     # print(13)
-        
+
     json_data = soup.find_all("script", attrs={"type":'text/javascript'})
     for data in json_data:
         if "jQuery.parseJSON" in str(data):
@@ -145,15 +149,33 @@ def scrape_url(url):
     #     # print(ele)
     #     src = ele.get('src')
     #     img_list.append(src)
-    
 
-    img_list = []
-    images = json_data['colorImages'][colour]
-    for img in images:
-        try:
-            img_list.append(img['hiRes'])
-        except Exception:
-            break
+    try:
+        img_list = []
+        images = json_data['colorImages'][colour]
+        for img in images:
+            try:
+                img_list.append(img['hiRes'])
+            except Exception as e:
+                print(e)
+                break
+    except KeyError:
+        json_data2 = soup.find_all("script", attrs={"type":'text/javascript'})
+        for data in json_data2:
+            if "'colorImages': { 'initial'" in str(data):
+                indexOfjquery = str(data).index("colorImages': { 'initial'")+14
+                endIndex = str(data).index(""",
+                'colorToAsin': {'initial'""")
+                json_data2 = str(data)[indexOfjquery:endIndex].strip()
+                break
+        json_data2 = json_data2.replace(" 'initial'", '"initial"')
+        json_data2 = json.loads(json_data2)
+        img_list = []
+
+        for img in json_data2['initial']:
+            img_list.append(img['large'])
+
+        # print(img_list)
 
     # if (len(img_list) == 0):
     #     i = 1
@@ -235,6 +257,10 @@ def scrape_amazon():
         driver.quit()
 
         variant_list = []
+
+        if 'gp/product' in amazonURL:
+            amazonURL = amazonURL.replace('gp/product', 'dp')
+
         id = amazonURL[amazonURL.index('dp/')+3: amazonURL.index('dp/')+13]
         # print(5, id)
 

@@ -71,7 +71,7 @@ def scrape_url(url):
     img_list = dict['props']['pageProps']['initialState']['product']['details']['data']['images']
     # print("img_list", img_list)
     # print()
-    
+
     try:
         os.mkdir(product_id)
     except FileExistsError:
