@@ -1,0 +1,5 @@
+.vscode
+.idea
+".\final Scripts\/builds"
+".\final Scripts\/dist"
+*.spec
