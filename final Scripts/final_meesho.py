@@ -157,7 +157,7 @@ def scrape_meesho():
 
         variant_list = []
 
-        variants = soup.find_all("div", attrs={"class": "sc-ZqFbI kzaKJz"})
+        variants = soup.find_all("div", attrs={"class": "sc-hOzowv cqHLZu"})
         for variant in variants:
             variant_list.append("https://www.meesho.com" + variant.findChild('a').get("href"))
 
